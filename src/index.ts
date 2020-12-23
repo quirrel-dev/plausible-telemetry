@@ -14,7 +14,15 @@ function getPixels(screenWidth: ScreenWidth): number {
 export default class PlausibleTelemetry {
   constructor(public domain: string, public screenWidth: ScreenWidth) {}
 
+  public get isDisabled() {
+    return !!process.env.DISABLE_TELEMETRY;
+  }
+
   public async record(path: string, event = "pageview") {
+    if (this.isDisabled) {
+      return;
+    }
+
     try {
       await fetch("https://plausible.io/api/event", {
         method: "POST",
